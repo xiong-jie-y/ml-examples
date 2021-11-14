@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-import onnxruntime
 
 class RealESRGANer():
 
@@ -24,8 +23,8 @@ class RealESRGANer():
 
         # initialize model
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        # if model is None:
-        #     model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=scale)
+        if model is None:
+            model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=scale)
 
         if model_path.startswith('https://'):
             model_path = load_file_from_url(
@@ -40,9 +39,6 @@ class RealESRGANer():
         self.model = model.to(self.device)
         if self.half:
             self.model = self.model.half()
-        print("running in cpu")
-        # self.session = onnxruntime.InferenceSession("RealESRGAN_x4plus_anime_6B.onnx", providers=["CPUExecutionProvider"])
-
 
     def pre_process(self, img):
         img = torch.from_numpy(np.transpose(img, (2, 0, 1))).float()
@@ -68,10 +64,7 @@ class RealESRGANer():
             self.img = F.pad(self.img, (0, self.mod_pad_w, 0, self.mod_pad_h), 'reflect')
 
     def process(self):
-        # import IPython; IPython.embed()
-        import time
-        # self.output = torch.tensor(self.session.run([], {"image.1": self.img.cpu().numpy()})[0])
-
+        import IPython; IPython.embed()
         self.output = self.model(self.img)
 
     def tile_process(self):
@@ -173,16 +166,12 @@ class RealESRGANer():
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # ------------------- process image (without the alpha channel) ------------------- #
-        import time
-
-        s = time.time()
         self.pre_process(img)
         if self.tile_size > 0:
             self.tile_process()
         else:
             self.process()
         output_img = self.post_process()
-        print(time.time() - s)
         output_img = output_img.data.squeeze().float().cpu().clamp_(0, 1).numpy()
         output_img = np.transpose(output_img[[2, 1, 0], :, :], (1, 2, 0))
         if img_mode == 'L':
