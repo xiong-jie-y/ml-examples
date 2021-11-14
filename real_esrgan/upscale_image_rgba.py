@@ -35,7 +35,7 @@ class SimpleRealESRGAN:
         image_rgb_tensor = image_rgb_tensor.unsqueeze(0)
 
         if self.onnx:
-            output_img = torch.tensor(self.session.run([], {"image.1":  np_image_rgb.cpu().numpy()})[0])
+            output_img = torch.tensor(self.session.run([], {"image.1":  image_rgb_tensor.cpu().numpy()})[0])
         else:
             output_img = self.model(image_rgb_tensor)
 
@@ -45,6 +45,7 @@ class SimpleRealESRGAN:
         output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
         return output
 
+    @torch.no_grad()
     def upscale_rgba_image(self, np_image_rgba):
         s = time.time()
         upscaled_rgb = self.upscale_image(np_image_rgba[:, :, 0:3])
@@ -62,7 +63,8 @@ class SimpleRealESRGAN:
 def main(onnx):
     upscaler = SimpleRealESRGAN(onnx)
     np_image = np.array(Image.open("test.png"))
-    pil_image = upscaler.upscale_rgba_image(np_image)
+    while True:
+        pil_image = upscaler.upscale_rgba_image(np_image)
     pil_image.show()
 
 if __name__ == "__main__":
