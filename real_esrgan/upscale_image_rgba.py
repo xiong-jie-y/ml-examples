@@ -63,8 +63,7 @@ class SimpleRealESRGAN:
 def main(onnx):
     upscaler = SimpleRealESRGAN(onnx)
     np_image = np.array(Image.open("test.png"))
-    while True:
-        pil_image = upscaler.upscale_rgba_image(np_image)
+    pil_image = upscaler.upscale_rgba_image(np_image)
     pil_image.show()
 
 if __name__ == "__main__":
