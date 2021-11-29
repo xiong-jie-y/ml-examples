@@ -1,0 +1,5 @@
+gradio
+huggingface-hub
+basicsr
+Pillow
+numpy
