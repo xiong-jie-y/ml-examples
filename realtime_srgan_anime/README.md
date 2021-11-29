@@ -1,5 +1,8 @@
-![](./screenshot.png)
+## Demo
+![](./demo.png)
 
+
+## Installation
 ```
 pip install -r requirements.txt
 
