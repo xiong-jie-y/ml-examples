@@ -2,10 +2,10 @@ import torch
 import numpy as np
 import gradio
 from huggingface_hub import hf_hub_download
+from basicsr.archs.srresnet_arch import MSRResNet
 
 class SimpleRealUpscaler:
     def __init__(self):
-        from basicsr.archs.srresnet_arch import MSRResNet
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         model = MSRResNet(num_in_ch=3, num_out_ch=3, num_feat=32, num_block=6, upscale=4)
         path = hf_hub_download("xiongjie/realtime-SRGAN-for-anime", filename="SRGAN_x4plus_anime.pth")
