@@ -1,0 +1,4 @@
+PyAudio
+onnxruntime
+scipy
+gdown
